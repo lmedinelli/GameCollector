@@ -13,13 +13,27 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     @IBOutlet weak var gameImageView: UIImageView!
     @IBOutlet weak var titleTextField: UITextField!
     
+    var game : Game? = nil
+    @IBOutlet weak var addUpdateButton: UIButton!
+    
     var imagePicker = UIImagePickerController()
     
+    @IBOutlet weak var deleteButton: UIButton!
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
 
         imagePicker.delegate = self
+        
+        if game != nil {
+            print("For editing game")
+            gameImageView.image = UIImage(data: game!.image as! Data)
+            titleTextField.text = game!.title
+            addUpdateButton.setTitle("Update", for: .normal)
+        }else{
+            deleteButton.isHidden = true
+        }
         
     }
 
@@ -43,16 +57,36 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         
-        let game = Game(context: context)
+        if game != nil {
+            game!.title = titleTextField.text
+            game!.image = UIImagePNGRepresentation(gameImageView.image!) as NSData?
+        }else{
+            let game = Game(context: context)
+            
+            game.title = titleTextField.text
+            game.image = UIImagePNGRepresentation(gameImageView.image!) as NSData?
+        }
         
-        game.title = titleTextField.text
-        game.image = UIImagePNGRepresentation(gameImageView.image!) as NSData?
         
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
         
         navigationController!.popViewController(animated: true)
     }
     
+    @IBAction func deleteGame(_ sender: Any) {
+        
+         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        context.delete(game!)
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+        
+        navigationController!.popViewController(animated: true)
+        
+    }
+    
     @IBAction func cameraTapped(_ sender: Any) {
+        
+        imagePicker.sourceType = .camera
+        
+        present(imagePicker, animated: true, completion: nil)
     }
 }
