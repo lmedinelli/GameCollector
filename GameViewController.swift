@@ -49,6 +49,8 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         game.image = UIImagePNGRepresentation(gameImageView.image!) as NSData?
         
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
+        
+        navigationController!.popViewController(animated: true)
     }
     
     @IBAction func cameraTapped(_ sender: Any) {
